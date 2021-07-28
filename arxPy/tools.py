@@ -1,4 +1,5 @@
 # modules
+import os
 import json
 import urllib
 from urllib.parse import urlencode
@@ -7,6 +8,8 @@ from urllib.request import Request
 import platform    # For getting the operating system name
 import subprocess  # For executing a shell command
 from datetime import datetime, timedelta
+import sqlite3
+from sqlite3 import Error as SQLError
 
 
 class kraken:
@@ -123,11 +126,33 @@ class kraken:
         command = ['ping', param, '1', self.URL]
         return subprocess.call(command) == 0
 
+class arxive:
+    PATH = './data/ohlc.db'
+    def __init__(self):
+        # open SQL session
+        try:
+            self.session = sqlite3.connect(self.PATH)
+            self.cursor = self.session.cursor()
+        except SQLError as e:
+            raise ConnectionError(f'cannot connect to data base:\n{e}')
+    
+    def addPair(self, pair):
+        '''
+        For each pair create a seperate table.
+        '''
+        self.cursor.execute(
+            f"""CREATE TABLE IF NOT EXISTS {pair} (time text, o FLOAT(32), h FLOAT(32), l FLOAT(32), c FLOAT(32), a FLOAT(32), v FLOAT(32))"""
+        )
+
+    def close(self):
+        self.session.close()
 
 if __name__ == '__main__':
     api = kraken()
+    db = arxive()
     #print(api.OHLC('XRPEUR', 5, 1440))
     print(api.coins())
+    
 
 
 
