@@ -123,12 +123,13 @@ class kraken:
         Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
         '''
         param = '-n' if platform.system().lower()=='windows' else '-c'
-        command = ['ping', param, '1', self.URL]
+        command = ['ping', param, '1', 'api.kraken.com']
         return subprocess.call(command) == 0
 
 class arxive:
-    PATH = './data/ohlc.db'
-    def __init__(self):
+    
+    def __init__(self, path):
+        self.PATH = path
         # open SQL session
         try:
             self.session = sqlite3.connect(self.PATH)
@@ -144,8 +145,29 @@ class arxive:
             f"""CREATE TABLE IF NOT EXISTS {pair} (time text, o FLOAT(32), h FLOAT(32), l FLOAT(32), c FLOAT(32), a FLOAT(32), v FLOAT(32))"""
         )
 
+    def appendPackage(self, package):
+        '''
+        A timeseries package will automatically be sorted into correct table
+        '''
+        for d in package['data']:
+            self.cursor.execute(
+                f"""INSERT INTO {package['pair']} 
+                VALUES ({d[0]}, {d[1]}, {d[2]}, {d[3]}, {d[4]}, {d[5]}, {d[6]})
+                """
+            )
     def close(self):
         self.session.close()
+
+def log (output, color='w', label='arxPy'):
+    if color == 'r':
+        color = '\033[0;31m'
+    elif color == 'y':
+        color = '\033[0;33m'
+    elif color == 'g':
+        color = '\033[0;32m'
+    else:
+        color = ''
+    print(f'[{label}]   {color}{output}\033[0m')
 
 if __name__ == '__main__':
     api = kraken()
