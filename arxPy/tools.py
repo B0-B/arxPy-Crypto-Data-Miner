@@ -150,11 +150,8 @@ class arxive:
         A timeseries package will automatically be sorted into correct table
         '''
         for d in package['data']:
-            self.cursor.execute(
-                f"""INSERT INTO {package['pair']} 
-                VALUES ({d[0]}, {d[1]}, {d[2]}, {d[3]}, {d[4]}, {d[5]}, {d[6]})
-                """
-            )
+            self.cursor.execute(f"""INSERT INTO {package['pair']}\nVALUES ({d[0]}, {d[1]}, {d[2]}, {d[3]}, {d[4]}, {d[5]}, {d[6]})""")
+    
     def close(self):
         self.session.close()
 

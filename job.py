@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
                 log('kraken is up!', 'g')
                 
-                for coin in kraken.coins():
+                for coin in api.coins():
                     log(f'archiving {coin} dataframe ...\r')
                     sleep(.01)
                     
@@ -47,6 +47,7 @@ if __name__ == '__main__':
 
         except KeyboardInterrupt:
             log('interupted.', 'y')
+            arx.close() # close db session
             exit(0)
         except Exception as e:
             log(e, 'r')
