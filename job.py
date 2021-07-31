@@ -8,8 +8,6 @@ dataBasePath = './data/ohlc.db'
 baseCurrency = 'USD'
 
 
-
-
 if __name__ == '__main__':
 
     log('start...', 'y')
@@ -17,24 +15,25 @@ if __name__ == '__main__':
     # build modules
     log('load modules ...')
     arx = arxive(dataBasePath)
-    api = kraken()
+    krk = kraken()
+    api = api('8000')
 
     while True:
 
         try:
             
-            if api.ping():
+            if krk.ping():
 
                 log('kraken is up!', 'g')
                 log('connect to db ...')
                 arx.connect()
-                for coin in api.coins():
+                for coin in krk.coins():
                     try:
                         log(f'archiving {coin} dataframe ...\r')
                         sleep(1)
                         
                         # request pkg
-                        pkg = api.OHLC(coin+baseCurrency, intervalInMinutes, epochInMinutes)
+                        pkg = krk.OHLC(coin+baseCurrency, intervalInMinutes, epochInMinutes)
                         arx.addPair(coin+baseCurrency) # creates new table for pair
                         arx.appendPackage(pkg)
                         arx.close()
