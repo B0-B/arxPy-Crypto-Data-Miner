@@ -26,16 +26,20 @@ if __name__ == '__main__':
             if api.ping():
 
                 log('kraken is up!', 'g')
-                
+                log('connect to db ...')
+                arx.connect()
                 for coin in api.coins():
-                    log(f'archiving {coin} dataframe ...\r')
-                    sleep(.01)
-                    
-                    # request pkg
-                    pkg = api.OHLC(coin+baseCurrency, intervalInMinutes, epochInMinutes)
-                    arx.addPair(coin+baseCurrency)
-                    arx.appendPackage(pkg)
-
+                    try:
+                        log(f'archiving {coin} dataframe ...\r')
+                        sleep(1)
+                        
+                        # request pkg
+                        pkg = api.OHLC(coin+baseCurrency, intervalInMinutes, epochInMinutes)
+                        arx.addPair(coin+baseCurrency) # creates new table for pair
+                        arx.appendPackage(pkg)
+                        arx.close()
+                    except Exception as e:
+                        log(f'Cannot draw data for {coin}, skip...', 'r')
                 
                 log('sleep mode zZz...')
                 sleep(60*epochInMinutes)
@@ -50,7 +54,6 @@ if __name__ == '__main__':
             arx.close() # close db session
             exit(0)
         except Exception as e:
-            log(e, 'r')
-            log('Error occured, pausing for 5 minutes ...', 'r')
-            sleep(300)
+            log('Error occured, pausing for 5 seconds ...', 'r')
+            sleep(5)
             
