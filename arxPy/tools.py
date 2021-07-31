@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import sqlite3
 from sqlite3 import Error as SQLError
 import http.server, ssl
-import threading
+from threading import Thread
 
 
 class kraken:
@@ -137,11 +137,13 @@ class api:
     def __init__(self, port):
 
         # check for ssl certificate
-        self.keyPath = '/etc/ssl/private/arxpy.pem'
-        self.certPath = '/etc/ssl/certs/arxpy_cert.pem'
-        if not os.path.isfile(self.keyPath):
+        self.home = os.path.expanduser('~')
+        self.certDir = self.home + '/certificate'
+        self.certPath = self.certDir + '/arxpy_cert.pem'
+        if not os.path.isdir(self.certDir):
+            os.system(f'mkdir {self.certDir}')
             print('Create ssl certificate ...')
-            os.system(f'''sudo openssl req -newkey rsa:2048 -new -nodes -x509 -keyout {self.keyPath} -out {self.certPath}''')
+            os.system(f'''openssl req -newkey rsa:2048 -new -nodes -x509 -keyout {self.certPath} -out {self.certPath}''')
         
         # invoke server
         self.httpd = http.server.HTTPServer(('localhost', port), http.server.SimpleHTTPRequestHandler)
@@ -157,7 +159,7 @@ class api:
         pass
 
     def invoke(self):
-        self.thread = threading.Thread(target=self.httpd.serve_forever)
+        self.thread = Thread(target=self.httpd.serve_forever)
         self.thread.daemon = True
         self.thread.run()
 
@@ -206,7 +208,7 @@ def log (output, color='w', label='arxPy'):
     print(f'[{label}]   {color}{output}\033[0m')
 
 if __name__ == '__main__':
-    a = api(8080)
+    a = api(4443)
     a.httpd.serve_forever()
     
 
