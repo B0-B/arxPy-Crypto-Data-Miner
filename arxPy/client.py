@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import platform, subprocess, requests
+import platform, subprocess, requests, json, os
 
 '''
 Client side python framework for arxPy API.
@@ -7,20 +7,26 @@ Client side python framework for arxPy API.
 
 class client:
 
-    def __init__(self, host, port):
+    def __init__(self, host, port=80):
         self.host = host
         self.port = port
         self.url = f'{self.host}:{self.port}'
+        self.home = os.path.expanduser('~')
+        # self.certDir = self.home + '/certs'
+        # self.certPath = self.certDir + '/arxpy_cert.pem'
+        # if not os.path.isdir(self.certDir):
+        #     os.system(f'mkdir {self.certDir}')
+        #     os.system(f'''openssl req -newkey rsa:2048 -new -nodes -x509 -keyout {self.certDir}/key.pem -out {self.certDir}/cert.pem''')
 
     def timeFrameData(self, pair, startDate, endDate):
-        pkg = json.load({
+        pkg = json.dumps({
             "mode": 'timeframe',
             "start": startDate,
             "end": endDate
         })
-        response = requests.post(self.url, json=pkg) 
+        response = requests.post(self.url, json=pkg) #, cert=(f'{self.certDir}/key.pem', f'{self.certDir}/cert.pem') )
         print(response.json())
 
 if __name__ == '__main__':
-    c = client('https://localhost', 4433)
-    c.timeFrameData()
+    c = client('http://localhost', 8080)
+    c.timeFrameData('XBTEUR', '', '')
