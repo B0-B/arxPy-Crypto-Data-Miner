@@ -33,7 +33,7 @@ class kraken:
         result = json.loads(raw_data.decode(encoding))['result'].keys()
         out, base = [], base.upper()
         for pair in result:
-            if base in pair and :
+            if base in pair:
                 validName=True
                 for elem in out:
                     if elem in pair:
@@ -131,17 +131,17 @@ class kraken:
 class api:
 
     '''
-    Simple rest API based on barebone ssl wrapped network socket which listens to HTTP packages.
+    Simple rest API based on barebone-ssl-wrapped network socket which listens to HTTP packages.
     '''
 
-    def __init__(self, port, ssl=True):
+    def __init__(self, port):
 
         # check for ssl certificate
         self.keyPath = '/etc/ssl/private/arxpy.pem'
-        self.certPath = '/etc/ssl/cert/arxpy_cert.pem'
+        self.certPath = '/etc/ssl/certs/arxpy_cert.pem'
         if not os.path.isfile(self.keyPath):
             print('Create ssl certificate ...')
-            os.system(f'''openssl req -newkey rsa:2048 -new -nodes -x509 -keyout {self.keyPath} -out {self.certPath}''')
+            os.system(f'''sudo openssl req -newkey rsa:2048 -new -nodes -x509 -keyout {self.keyPath} -out {self.certPath}''')
         
         # invoke server
         self.httpd = http.server.HTTPServer(('localhost', port), http.server.SimpleHTTPRequestHandler)
@@ -206,10 +206,8 @@ def log (output, color='w', label='arxPy'):
     print(f'[{label}]   {color}{output}\033[0m')
 
 if __name__ == '__main__':
-    api = kraken()
-    db = arxive()
-    #print(api.OHLC('XRPEUR', 5, 1440))
-    print(api.coins())
+    a = api(8080)
+    a.httpd.serve_forever()
     
 
 
