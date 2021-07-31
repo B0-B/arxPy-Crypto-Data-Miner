@@ -10,6 +10,8 @@ import subprocess  # For executing a shell command
 from datetime import datetime, timedelta
 import sqlite3
 from sqlite3 import Error as SQLError
+import http.server, ssl
+import threading
 
 
 class kraken:
@@ -125,6 +127,39 @@ class kraken:
         param = '-n' if platform.system().lower()=='windows' else '-c'
         command = ['ping', param, '1', 'api.kraken.com']
         return subprocess.call(command) == 0
+
+class api:
+
+    '''
+    Simple rest API based on barebone ssl wrapped network socket which listens to HTTP packages.
+    '''
+
+    def __init__(self, port, ssl=True):
+
+        # check for ssl certificate
+        self.keyPath = '/etc/ssl/private/arxpy.pem'
+        self.certPath = '/etc/ssl/cert/arxpy_cert.pem'
+        if not os.path.isfile(self.keyPath):
+            print('Create ssl certificate ...')
+            os.system(f'''openssl req -newkey rsa:2048 -new -nodes -x509 -keyout {self.keyPath} -out {self.certPath}''')
+        
+        # invoke server
+        self.httpd = http.server.HTTPServer(('localhost', port), http.server.SimpleHTTPRequestHandler)
+        self.httpd.socket = ssl.wrap_socket(self.httpd.socket,
+                                    server_side=True,
+                                    certfile=self.certPath,
+                                    ssl_version=ssl.PROTOCOL_TLS)
+
+        # Pointer -> thread
+        self.thread = None
+    
+    def handler(self):
+        pass
+
+    def invoke(self):
+        self.thread = threading.Thread(target=self.httpd.serve_forever)
+        self.thread.daemon = True
+        self.thread.run()
 
 class arxive:
     
