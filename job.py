@@ -61,4 +61,3 @@ if __name__ == '__main__':
         except Exception as e:
             log('Error occured, pausing for 5 seconds ...', 'r')
             sleep(5)
-            

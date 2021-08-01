@@ -24,7 +24,6 @@ class client:
         pkg.mode = 'timeframe'
         pkg.start = startDate
         pkg.stop = stopDate
-    
         response = requests.post(self.url, json=pkg.toJSON()) #, cert=(f'{self.certDir}/key.pem', f'{self.certDir}/cert.pem') )
         response.encoding = response.apparent_encoding
         print(response.text)

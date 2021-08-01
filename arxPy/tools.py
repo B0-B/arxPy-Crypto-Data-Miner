@@ -12,7 +12,6 @@ import sqlite3
 from sqlite3 import Error as SQLError
 from traceback import print_exc
 
-
 class kraken:
 
     URL = 'https://api.kraken.com/0/public/OHLC'
@@ -127,7 +126,6 @@ class kraken:
         command = ['ping', param, '1', 'api.kraken.com']
         return subprocess.call(command) == 0
 
-
 class arxive:
     
     def __init__(self, path):
@@ -175,27 +173,6 @@ class arxive:
         self.session = sqlite3.connect(self.PATH)
         self.cursor = self.session.cursor()
     
-    def query(self, tableName, *keys):
-        self.connect()
-        cmd = f'''SELECT {', '.join([f'"{k}"' for k in keys])} from {tableName}'''
-        try:
-            self.cursor.execute(cmd)
-            return self.cursor.fetchall()
-        except Exception as e:
-            self.logger.note(e, logType='DATABASE ERROR', fTree=True, logTypeCol='\033[91m')
-        finally:
-            self.close()
-
-    def queryRow(self, tableName, key, value):
-        try:
-            self.connect()
-            self.cursor.execute(f'''SELECT * from {tableName} where "{key}"="{value}"''')
-            return self.cursor.fetchall()
-        except Exception as e:
-            self.logger.note(e, logType='DATABASE ERROR', fTree=True, logTypeCol='\033[91m')
-        finally:
-            self.close()
-    
     def queryPeriod(self, pair, start, stop):
         '''
         Queries a timeseries between start time and stop time for a given pair
@@ -220,31 +197,3 @@ def log (output, color='w', label='arxPy'):
     else:
         color = ''
     print(f'[{label}]   {color}{output}\033[0m')
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

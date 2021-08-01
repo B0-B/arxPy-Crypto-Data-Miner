@@ -14,33 +14,6 @@ try:
 except:
     from arxPy.tools import arxive, log
 
-
-# class pipe(threading.Thread):
-
-#     def __init__(self, function, wait, *args):
-#         self.wait = wait
-#         threading.Thread.__init__(self)
-#         self.func = function
-#         self.args = args
-#         self.stoprequest = threading.Event()
-
-#     def run(self):
-#         while not self.stoprequest.isSet():
-#             try: # important during init, otherwise crash
-#                 self.func(*self.args)
-                
-#                 # listen frequently during waiting
-#                 for i in range(10*self.wait):
-#                     if self.stoprequest.isSet():
-#                         break
-#                     sleep(.1)
-#             except:
-#                 pass
-
-#     def stop(self, timeout = None):
-#         self.stoprequest.set()
-#         super(pipe, self).join(timeout)
-
 class Object:
 
     def toJSON(self):
@@ -72,14 +45,9 @@ class handler(http.server.SimpleHTTPRequestHandler):
             return
             
         # read the request message and convert it to json
-        #self.data = json.loads(self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8'))
         jsonPkg = json.loads(self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8'))
         self.data = json.loads(jsonPkg) # double loads turns to dict
         dic = self.data
-        # print('datastring', self.data_string)
-        # pkg = json.dumps(self.data_string)
-        # #JSON = json.loads(''.join(pkg.split('\\'))[2:-2])
-        # dic = json.loads(pkg)
         log(f"received package (type {type(dic)}):\n\t{jsonPkg}")
 
 
@@ -88,18 +56,20 @@ class handler(http.server.SimpleHTTPRequestHandler):
         try:
             #raise ValueError('TEst')
             if dic['mode'] == 'timeframe':
-                rows = self.arx.queryPeriod(dic['pair'], dic['start'], dic['stop'])
-                print('rows', rows)
-                responsePkg.data = rows
+                try:
+                    rows = self.arx.queryPeriod(dic['pair'], dic['start'], dic['stop'])
+                    print('rows', rows)
+                    responsePkg.data = rows
+                except Exception as e:
+                    print(e)
+                    responsePkg.error = 'No data for given time period'
         except Exception as e:
             print_exc()
             responsePkg.error = e
         finally:
             #responseDump = json.dumps(responsePkg)
             self.end_headers()
-            self.wfile.write(responsePkg.toJSON().encode('utf-8'))      
-
-        
+            self.wfile.write(responsePkg.toJSON().encode('utf-8'))     
 
 class server:
 
@@ -115,7 +85,3 @@ class server:
         self.thread = Thread(target=self.httpd.serve_forever)
         self.thread.daemon = True
         self.thread.start()
-
-if __name__ == '__main__':
-    a = server(8080, handler)
-    a.httpd.serve_forever()
