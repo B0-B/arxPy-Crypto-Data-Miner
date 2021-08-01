@@ -52,6 +52,7 @@ class handler(http.server.SimpleHTTPRequestHandler):
 
         # check which mode was picked
         responsePkg = Object()
+        responsePkg.pair = dic['pair']
         try:
             if dic['mode'] == 'timeframe':
                 try:

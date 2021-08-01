@@ -26,7 +26,7 @@ class client:
         pkg.stop = stopDate
         response = requests.post(self.url, json=pkg.toJSON()) #, cert=(f'{self.certDir}/key.pem', f'{self.certDir}/cert.pem') )
         response.encoding = response.apparent_encoding
-        print(response.text)
+        return json.loads(response.text)
 
 if __name__ == '__main__':
     c = client('http://localhost', 8080)

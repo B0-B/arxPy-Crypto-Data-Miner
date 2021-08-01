@@ -184,7 +184,7 @@ class arxive:
             self.cursor.execute(cmd)
             return self.cursor.fetchall()
         except Exception as e:
-            self.logger.note(e, logType='DATABASE ERROR', fTree=True, logTypeCol='\033[91m')
+            print('Database Error:', e)
         finally:
             self.close()
 
