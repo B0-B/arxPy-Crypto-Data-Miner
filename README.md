@@ -4,5 +4,5 @@
 
 <p align=center><img src="demo.gif"></p>
 
-A barebone timeseries/dataframe SQL aggregator and json delivery API for [kraken](https://kraken.com) OHLC data. <strong>No 3rd-party dependencies</strong>, solid implementation, quickly implemented and ideal for machine learning.
+A barebone timeseries/dataframe `SQL` aggregator and `json`-delivery API for [kraken](https://kraken.com) OHLC data. <strong>No 3rd-party dependencies</strong>, solid implementation, quickly implemented and ideal for machine learning.
 
