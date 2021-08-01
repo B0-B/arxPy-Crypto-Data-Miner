@@ -36,7 +36,7 @@ if __name__ == '__main__':
                 for coin in krk.coins():
                     try:
                         log(f'archiving {coin} dataframe ...\r')
-                        sleep(1)
+                        sleep(.3)
                         
                         # request pkg
                         pkg = krk.OHLC(coin+baseCurrency, intervalInMinutes, epochInMinutes)

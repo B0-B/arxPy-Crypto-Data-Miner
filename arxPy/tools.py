@@ -10,7 +10,7 @@ import subprocess  # For executing a shell command
 from datetime import datetime, timedelta
 import sqlite3
 from sqlite3 import Error as SQLError
-
+from traceback import print_exc
 
 
 class kraken:
@@ -134,8 +134,8 @@ class arxive:
         self.PATH = path
         # open SQL session
         try:
-            self.session = sqlite3.connect(self.PATH)
-            self.cursor = self.session.cursor()
+            self.connect()
+            self.close()
         except SQLError as e:
             raise ConnectionError(f'cannot connect to data base:\n{e}')
     
@@ -144,26 +144,36 @@ class arxive:
         For each pair create a seperate table.
         '''
         self.connect()
-        self.cursor.execute(
-            f"""CREATE TABLE IF NOT EXISTS {pair} (time text, o FLOAT(32), h FLOAT(32), l FLOAT(32), c FLOAT(32), a FLOAT(32), v FLOAT(32))"""
-        )
-        self.close()
+        try:
+            cmd = f"""CREATE TABLE IF NOT EXISTS {pair} (time text, o FLOAT(32), h FLOAT(32), l FLOAT(32), c FLOAT(32), a FLOAT(32), v FLOAT(32))"""
+            self.cursor.execute(cmd)
+            self.session.commit()
+        except:
+            print_exc()
+        finally:
+            self.close()
 
     def appendPackage(self, package):
         '''
         A timeseries package will automatically be sorted into correct table
         '''
         self.connect()
-        for d in package['data']:
-            cmd = f"""INSERT INTO {package['pair']}\nVALUES ("{d[0]}", {d[1]}, {d[2]}, {d[3]}, {d[4]}, {d[5]}, {d[6]})"""
-            self.cursor.execute(cmd)
-        self.close()
+        try:
+            for d in package['data']:
+                cmd = f"""INSERT INTO {package['pair']}\nVALUES ("{d[0]}", {d[1]}, {d[2]}, {d[3]}, {d[4]}, {d[5]}, {d[6]})"""
+                self.cursor.execute(cmd)
+            self.session.commit()
+        except:
+            print_exc()
+        finally:
+            self.close()
     
     def close(self):
         self.session.close()
 
     def connect(self):
         self.session = sqlite3.connect(self.PATH)
+        self.cursor = self.session.cursor()
     
     def query(self, tableName, *keys):
         self.connect()
