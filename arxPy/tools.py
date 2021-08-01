@@ -197,6 +197,9 @@ class arxive:
             self.close()
     
     def queryPeriod(self, pair, start, stop):
+        '''
+        Queries a timeseries between start time and stop time for a given pair
+        '''
         try:
             self.connect()
             cmd = f'''Select * from {pair} where time Between "{start}" and "{stop}"'''

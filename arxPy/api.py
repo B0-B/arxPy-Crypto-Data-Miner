@@ -90,13 +90,14 @@ class handler(http.server.SimpleHTTPRequestHandler):
             if dic['mode'] == 'timeframe':
                 rows = self.arx.queryPeriod(dic['pair'], dic['start'], dic['stop'])
                 print('rows', rows)
+                responsePkg.data = rows
         except Exception as e:
             print_exc()
             responsePkg.error = e
         finally:
             #responseDump = json.dumps(responsePkg)
             self.end_headers()
-            self.wfile.write(responsePkg.toJSON())      
+            self.wfile.write(responsePkg.toJSON().encode('utf-8'))      
 
         
 
