@@ -12,7 +12,7 @@ from traceback import print_exc
 try:
     from tools import arxive, log
 except:
-    from arxPy.tools import arxive, log
+    from arxPy.tools import arxive, log, clockStr
 
 class Object:
 
@@ -47,7 +47,7 @@ class handler(http.server.SimpleHTTPRequestHandler):
         # read the request message and convert it to json
         jsonPkg = json.loads(self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8'))
         dic = json.loads(jsonPkg) # double loads turns to dict
-        log(f"received package (type {type(dic)}):\n\t{jsonPkg}")
+        log(f"received package (type {type(dic)}) at \033[0;32m{clockStr()}\033[0m\n\t{jsonPkg}")
 
 
         # check which mode was picked

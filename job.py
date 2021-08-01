@@ -9,7 +9,7 @@ intervalInMinutes = 5
 epochInMinutes = 24*60
 dataBasePath = './data/ohlc.db'
 baseCurrency = 'USD'
-arxiveTime = '23:10'
+arxiveTime = '00:15'
 
 
 if __name__ == '__main__':
@@ -28,7 +28,9 @@ if __name__ == '__main__':
 
     # -- aggregate --
     log('scheduled aggregation at '+arxiveTime, 'g')
-    while waitingForSchedule(arxiveTime): sleep(30)
+    while waitingForSchedule(arxiveTime): 
+        clock()
+        sleep(30)
     while True:
 
         try:

@@ -199,10 +199,13 @@ def log (output, color='w', label='arxPy'):
         color = ''
     print(f'[{label}]   {color}{output}\033[0m')
 
-def clock ():
+def clock (mod=5):
     minutes = int(datetime.now().strftime("%M"))
-    if minutes % 5 == 0:
+    if minutes % mod == 0:
         log(datetime.now().strftime("%m-%d-%y %H:%M"), 'g')
+
+def clockStr ():
+    return datetime.now().strftime("%m-%d-%y %H:%M")
 
 def waitingForSchedule (time):
     return datetime.now().strftime("%H:%M") != time

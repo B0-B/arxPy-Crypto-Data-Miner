@@ -1,3 +1,8 @@
-<h1 align=center>arxPy</h1>
+<strong><h1 align=center>arxPy</h1></strong>
 
-A barebone timeseries data aggregation and archive framework for [kraken](https://kraken.com) OHLC rest API. <strong>No 3rd-party dependencies</strong>, solid implementation via rest API and SQL, quickly implemented and ideal for machine learning.
+
+
+<p align=center><img src="demo.gif"></p>
+
+A barebone timeseries/dataframe SQL aggregator and json delivery API for [kraken](https://kraken.com) OHLC data. <strong>No 3rd-party dependencies</strong>, solid implementation, quickly implemented and ideal for machine learning.
+
