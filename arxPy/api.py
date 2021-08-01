@@ -68,14 +68,22 @@ class handler(http.server.SimpleHTTPRequestHandler):
         self.data_string = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
         pkg = json.dumps(self.data_string)
         JSON = json.loads(''.join(pkg.split('\\'))[2:-2])
-        print("received package:", pkg)
+        dic = dict(JSON)
+        print("received package:", dic)
 
 
         # check which mode was picked
-        if pkg['mode'] == 'timeframe':
-            pass
+        responsePkg = {'error': '', 'result': ''}
+        try:
+            raise ValueError('TEst')
+            #if dic['mode'] == 'timeframe':
+        except Exception as e:
+            responsePkg['error'] = str(e)
+        finally:
+            responseDump = json.dumps(responsePkg)
+            self.wfile.write(responseDump.encode(encoding='utf_8'))      
 
-        self.end_headers()
+        
 
 class server:
 

@@ -30,7 +30,7 @@ if __name__ == '__main__':
         try:
             
             if krk.ping():
-
+                log('Try to reach kraken ...', 'y')
                 log('kraken is up!', 'g')
                 log('connect to db ...')
                 for coin in krk.coins():
