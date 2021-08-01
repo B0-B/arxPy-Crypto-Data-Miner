@@ -9,7 +9,7 @@ intervalInMinutes = 5
 epochInMinutes = 24*60
 dataBasePath = './data/ohlc.db'
 baseCurrency = 'USD'
-arxiveTime = '00:15'
+arxiveTime = '01:01'
 
 
 if __name__ == '__main__':
