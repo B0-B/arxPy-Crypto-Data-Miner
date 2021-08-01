@@ -31,4 +31,4 @@ class client:
 
 if __name__ == '__main__':
     c = client('http://localhost', 8080)
-    c.timeFrameData('XBTEUR', '', '')
+    c.timeFrameData('AAVEUSD', '07-31-21 20:25', '07-31-21 23:20')

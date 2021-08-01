@@ -22,10 +22,10 @@ if __name__ == '__main__':
     # invoke server
     log(f'invoke rest API server at http://localhost:{port}', 'y')
     api = server(port, handler)
-    api.invoke()
+    api.httpd.serve_forever()
 
     # aggregate
-    while True:
+    while False:
 
         try:
             

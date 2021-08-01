@@ -9,9 +9,9 @@ import json
 import http.server, ssl, cgi
 from threading import Thread
 try:
-    from tools import arxive
+    from tools import arxive, log
 except:
-    from arxPy.tools import arxive
+    from arxPy.tools import arxive, log
 
 
 # class pipe(threading.Thread):
@@ -40,6 +40,11 @@ except:
 #         self.stoprequest.set()
 #         super(pipe, self).join(timeout)
 
+class Object:
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
+
 class handler(http.server.SimpleHTTPRequestHandler):
 
     '''
@@ -66,22 +71,26 @@ class handler(http.server.SimpleHTTPRequestHandler):
             
         # read the message and convert it into a python dictionary
         self.data_string = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
+        print('datastring', self.data_string)
         pkg = json.dumps(self.data_string)
         JSON = json.loads(''.join(pkg.split('\\'))[2:-2])
-        dic = dict(JSON)
-        print("received package:", dic)
+        dic = JSON
+        log(f"received package\n\t{dic}")
 
 
         # check which mode was picked
-        responsePkg = {'error': '', 'result': ''}
+        responsePkg = Object()
         try:
-            raise ValueError('TEst')
-            #if dic['mode'] == 'timeframe':
+            #raise ValueError('TEst')
+            if dic['mode'] == 'timeframe':
+                rows = arx.queryPeriod(dic['pair'], dic['start'], dic['stop'])
+                print('rows', rows)
         except Exception as e:
-            responsePkg['error'] = str(e)
+            responsePkg.error = e
         finally:
-            responseDump = json.dumps(responsePkg)
-            self.wfile.write(responseDump.encode(encoding='utf_8'))      
+            #responseDump = json.dumps(responsePkg)
+            self.end_headers()
+            self.wfile.write(responsePkg.toJSON().encode(encoding='utf_8'))      
 
         
 

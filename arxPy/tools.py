@@ -195,6 +195,16 @@ class arxive:
             self.logger.note(e, logType='DATABASE ERROR', fTree=True, logTypeCol='\033[91m')
         finally:
             self.close()
+    
+    def queryPeriod(self, pair, start, stop):
+        try:
+            self.connect()
+            self.cursor.execute(f'''Select * from {pair} where time Between {start} and {stop}''')
+            return self.cursor.fetchall()
+        except Exception as e:
+            self.logger.note(e, logType='DATABASE ERROR', fTree=True, logTypeCol='\033[91m')
+        finally:
+            self.close()
 
 def log (output, color='w', label='arxPy'):
     if color == 'r':
