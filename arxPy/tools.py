@@ -1,4 +1,4 @@
-# modules
+#!/usr/bin/env python3
 import os
 import json
 import urllib
@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 import sqlite3
 from sqlite3 import Error as SQLError
 from traceback import print_exc
+from datetime import datetime
 
 class kraken:
 
@@ -98,9 +99,9 @@ class kraken:
             'data': [],
             'length': len(timeseries),
             'pair': pair,
-            'start': past.strftime("%m-%d-%y %H:%M:%S"),
+            'start': past.strftime("%m-%d-%y %H:%M"),
             'startStamp': past.timestamp(),
-            'stop': serverTime.strftime("%m-%d-%y %H:%M:%S"),
+            'stop': serverTime.strftime("%m-%d-%y %H:%M"),
             'stopStamp': serverTimestamp,
         }
         for value in timeseries:
@@ -197,3 +198,11 @@ def log (output, color='w', label='arxPy'):
     else:
         color = ''
     print(f'[{label}]   {color}{output}\033[0m')
+
+def clock ():
+    minutes = int(datetime.now().strftime("%M"))
+    if minutes % 5 == 0:
+        log(datetime.now().strftime("%m-%d-%y %H:%M"), 'g')
+
+def waitingForSchedule (time):
+    return datetime.now().strftime("%H:%M") != time

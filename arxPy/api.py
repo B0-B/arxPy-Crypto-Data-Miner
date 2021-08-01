@@ -46,19 +46,16 @@ class handler(http.server.SimpleHTTPRequestHandler):
             
         # read the request message and convert it to json
         jsonPkg = json.loads(self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8'))
-        self.data = json.loads(jsonPkg) # double loads turns to dict
-        dic = self.data
+        dic = json.loads(jsonPkg) # double loads turns to dict
         log(f"received package (type {type(dic)}):\n\t{jsonPkg}")
 
 
         # check which mode was picked
         responsePkg = Object()
         try:
-            #raise ValueError('TEst')
             if dic['mode'] == 'timeframe':
                 try:
                     rows = self.arx.queryPeriod(dic['pair'], dic['start'], dic['stop'])
-                    print('rows', rows)
                     responsePkg.data = rows
                 except Exception as e:
                     print(e)
@@ -67,7 +64,6 @@ class handler(http.server.SimpleHTTPRequestHandler):
             print_exc()
             responsePkg.error = e
         finally:
-            #responseDump = json.dumps(responsePkg)
             self.end_headers()
             self.wfile.write(responsePkg.toJSON().encode('utf-8'))     
 
