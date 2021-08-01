@@ -13,6 +13,33 @@ try:
 except:
     from arxPy.tools import arxive
 
+
+# class pipe(threading.Thread):
+
+#     def __init__(self, function, wait, *args):
+#         self.wait = wait
+#         threading.Thread.__init__(self)
+#         self.func = function
+#         self.args = args
+#         self.stoprequest = threading.Event()
+
+#     def run(self):
+#         while not self.stoprequest.isSet():
+#             try: # important during init, otherwise crash
+#                 self.func(*self.args)
+                
+#                 # listen frequently during waiting
+#                 for i in range(10*self.wait):
+#                     if self.stoprequest.isSet():
+#                         break
+#                     sleep(.1)
+#             except:
+#                 pass
+
+#     def stop(self, timeout = None):
+#         self.stoprequest.set()
+#         super(pipe, self).join(timeout)
+
 class handler(http.server.SimpleHTTPRequestHandler):
 
     '''
@@ -63,7 +90,7 @@ class server:
     def invoke(self):
         self.thread = Thread(target=self.httpd.serve_forever)
         self.thread.daemon = True
-        self.thread.run()
+        self.thread.start()
 
 if __name__ == '__main__':
     a = server(8080, handler)
