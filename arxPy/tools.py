@@ -199,7 +199,8 @@ class arxive:
     def queryPeriod(self, pair, start, stop):
         try:
             self.connect()
-            self.cursor.execute(f'''Select * from {pair} where time Between {start} and {stop}''')
+            cmd = f'''Select * from {pair} where time Between "{start}" and "{stop}"'''
+            self.cursor.execute(cmd)
             return self.cursor.fetchall()
         except Exception as e:
             self.logger.note(e, logType='DATABASE ERROR', fTree=True, logTypeCol='\033[91m')

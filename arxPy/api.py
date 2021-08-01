@@ -8,6 +8,7 @@ import os
 import json
 import http.server, ssl, cgi
 from threading import Thread
+from traceback import print_exc
 try:
     from tools import arxive, log
 except:
@@ -41,9 +42,10 @@ except:
 #         super(pipe, self).join(timeout)
 
 class Object:
+
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
+
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
 class handler(http.server.SimpleHTTPRequestHandler):
 
@@ -69,13 +71,16 @@ class handler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             return
             
-        # read the message and convert it into a python dictionary
-        self.data_string = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
-        print('datastring', self.data_string)
-        pkg = json.dumps(self.data_string)
-        JSON = json.loads(''.join(pkg.split('\\'))[2:-2])
-        dic = JSON
-        log(f"received package\n\t{dic}")
+        # read the request message and convert it to json
+        #self.data = json.loads(self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8'))
+        jsonPkg = json.loads(self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8'))
+        self.data = json.loads(jsonPkg) # double loads turns to dict
+        dic = self.data
+        # print('datastring', self.data_string)
+        # pkg = json.dumps(self.data_string)
+        # #JSON = json.loads(''.join(pkg.split('\\'))[2:-2])
+        # dic = json.loads(pkg)
+        log(f"received package (type {type(dic)}):\n\t{jsonPkg}")
 
 
         # check which mode was picked
@@ -83,14 +88,15 @@ class handler(http.server.SimpleHTTPRequestHandler):
         try:
             #raise ValueError('TEst')
             if dic['mode'] == 'timeframe':
-                rows = arx.queryPeriod(dic['pair'], dic['start'], dic['stop'])
+                rows = self.arx.queryPeriod(dic['pair'], dic['start'], dic['stop'])
                 print('rows', rows)
         except Exception as e:
+            print_exc()
             responsePkg.error = e
         finally:
             #responseDump = json.dumps(responsePkg)
             self.end_headers()
-            self.wfile.write(responsePkg.toJSON().encode(encoding='utf_8'))      
+            self.wfile.write(responsePkg.toJSON())      
 
         
 
