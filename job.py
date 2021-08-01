@@ -14,6 +14,7 @@ arxiveTime = '00:15'
 
 if __name__ == '__main__':
 
+    banner()
     log('start...', 'y')
 
     # -- instantiate modules --
