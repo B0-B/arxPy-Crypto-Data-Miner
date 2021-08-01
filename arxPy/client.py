@@ -20,12 +20,14 @@ class client:
 
     def timeFrameData(self, pair, startDate, endDate):
         pkg = json.dumps({
+            "pair": pair,
             "mode": 'timeframe',
             "start": startDate,
             "end": endDate
         })
         response = requests.post(self.url, json=pkg) #, cert=(f'{self.certDir}/key.pem', f'{self.certDir}/cert.pem') )
-        print(response.json())
+        response.encoding = response.apparent_encoding
+        print(response.text)
 
 if __name__ == '__main__':
     c = client('http://localhost', 8080)

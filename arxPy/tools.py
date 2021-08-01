@@ -106,7 +106,7 @@ class kraken:
         }
         for value in timeseries:
             dataPoint = [ # time/o/h/l/c/avg/volume
-                datetime.fromtimestamp(value[0]).strftime("%m-%d-%y %H:%M:%S"),
+                datetime.fromtimestamp(value[0]).strftime("%m-%d-%y %H:%M"),
                 value[1],
                 value[2],
                 value[3],
@@ -143,23 +143,48 @@ class arxive:
         '''
         For each pair create a seperate table.
         '''
+        self.connect()
         self.cursor.execute(
             f"""CREATE TABLE IF NOT EXISTS {pair} (time text, o FLOAT(32), h FLOAT(32), l FLOAT(32), c FLOAT(32), a FLOAT(32), v FLOAT(32))"""
         )
+        self.close()
 
     def appendPackage(self, package):
         '''
         A timeseries package will automatically be sorted into correct table
         '''
+        self.connect()
         for d in package['data']:
             cmd = f"""INSERT INTO {package['pair']}\nVALUES ("{d[0]}", {d[1]}, {d[2]}, {d[3]}, {d[4]}, {d[5]}, {d[6]})"""
             self.cursor.execute(cmd)
+        self.close()
     
     def close(self):
         self.session.close()
 
     def connect(self):
         self.session = sqlite3.connect(self.PATH)
+    
+    def query(self, tableName, *keys):
+        self.connect()
+        cmd = f'''SELECT {', '.join([f'"{k}"' for k in keys])} from {tableName}'''
+        try:
+            self.cursor.execute(cmd)
+            return self.cursor.fetchall()
+        except Exception as e:
+            self.logger.note(e, logType='DATABASE ERROR', fTree=True, logTypeCol='\033[91m')
+        finally:
+            self.close()
+
+    def queryRow(self, tableName, key, value):
+        try:
+            self.connect()
+            self.cursor.execute(f'''SELECT * from {tableName} where "{key}"="{value}"''')
+            return self.cursor.fetchall()
+        except Exception as e:
+            self.logger.note(e, logType='DATABASE ERROR', fTree=True, logTypeCol='\033[91m')
+        finally:
+            self.close()
 
 def log (output, color='w', label='arxPy'):
     if color == 'r':

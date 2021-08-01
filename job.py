@@ -1,7 +1,9 @@
 from arxPy.tools import *
+from arxPy.api import server, handler
 from time import sleep
 
 # -- slicing parameters --
+port = 8080
 intervalInMinutes = 5
 epochInMinutes = 24*60
 dataBasePath = './data/ohlc.db'
@@ -16,8 +18,13 @@ if __name__ == '__main__':
     log('load modules ...')
     arx = arxive(dataBasePath)
     krk = kraken()
-    api = api('8000')
 
+    # invoke server
+    log(f'invoke rest API server at http://localhost:{port}', 'y')
+    api = server(port, handler)
+    api.invoke()
+
+    # aggregate
     while True:
 
         try:
@@ -26,7 +33,6 @@ if __name__ == '__main__':
 
                 log('kraken is up!', 'g')
                 log('connect to db ...')
-                arx.connect()
                 for coin in krk.coins():
                     try:
                         log(f'archiving {coin} dataframe ...\r')
@@ -36,7 +42,6 @@ if __name__ == '__main__':
                         pkg = krk.OHLC(coin+baseCurrency, intervalInMinutes, epochInMinutes)
                         arx.addPair(coin+baseCurrency) # creates new table for pair
                         arx.appendPackage(pkg)
-                        arx.close()
                     except Exception as e:
                         log(f'Cannot draw data for {coin}, skip...', 'r')
                 
