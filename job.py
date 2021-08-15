@@ -9,7 +9,7 @@ intervalInMinutes = 5
 epochInMinutes = 24*60
 dataBasePath = './data/ohlc.db'
 baseCurrency = 'USD'
-arxiveTime = '01:01'
+arxiveTime = '17:00'
 
 
 if __name__ == '__main__':
@@ -62,7 +62,9 @@ if __name__ == '__main__':
             
             # wait one epoch for next aggregation
             log('next aggregation at '+arxiveTime, 'g')
-            sleep(60*epochInMinutes)
+            while waitingForSchedule(arxiveTime): 
+                clock()
+                sleep(30)
 
         except KeyboardInterrupt:
             log('interupted.', 'y')
