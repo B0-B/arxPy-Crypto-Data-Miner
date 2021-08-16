@@ -61,6 +61,13 @@ class handler(http.server.SimpleHTTPRequestHandler):
                 except Exception as e:
                     print(e)
                     responsePkg.error = 'No data for given time period'
+            elif dic['mode'] == 'all':
+                try:
+                    rows = self.arx.queryPair(dic['pair'])
+                    responsePkg.data = rows
+                except Exception as e:
+                    print(e)
+                    responsePkg.error = 'No data for given time period'
         except Exception as e:
             print_exc()
             responsePkg.error = e

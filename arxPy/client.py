@@ -27,6 +27,14 @@ class client:
         response = requests.post(self.url, json=pkg.toJSON()) #, cert=(f'{self.certDir}/key.pem', f'{self.certDir}/cert.pem') )
         response.encoding = response.apparent_encoding
         return json.loads(response.text)
+
+    def allData(self, pair):
+        pkg = Object()
+        pkg.pair = pair
+        pkg.mode = 'all'
+        response = requests.post(self.url, json=pkg.toJSON()) #, cert=(f'{self.certDir}/key.pem', f'{self.certDir}/cert.pem') )
+        response.encoding = response.apparent_encoding
+        return json.loads(response.text)
     
     def coins (self, base="usd"):
         '''

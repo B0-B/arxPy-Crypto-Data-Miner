@@ -188,6 +188,20 @@ class arxive:
         finally:
             self.close()
 
+    def queryPair(self, pair):
+        '''
+        Queries complete ts of asset pair.
+        '''
+        try:
+            self.connect()
+            cmd = f'''Select * from {pair}'''
+            self.cursor.execute(cmd)
+            return self.cursor.fetchall()
+        except Exception as e:
+            print('Database Error:', e)
+        finally:
+            self.close()
+
 def banner ():
     print("""\
                                ____              
@@ -199,6 +213,7 @@ def banner ():
          \/__/\/_/ \/_/  \//\/_/  \/_/  `/___/> \ 
                                            /\___/
                                            \/__/ """)
+
 def log (output, color='w', label='arxPy'):
     if color == 'r':
         color = '\033[0;31m'
